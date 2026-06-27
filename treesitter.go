@@ -6,6 +6,7 @@ import (
 
 	ts "github.com/odvcencio/gotreesitter"
 	"github.com/odvcencio/gotreesitter/grammars"
+	cmts "github.com/richardwooding/go-codemetrics/treesitter"
 )
 
 // parseTimeoutMicros caps a single tree-sitter parse. A pathological grammar
@@ -130,19 +131,35 @@ func extractTreeSitter(language string, src []byte) (Symbols, bool) {
 		MethodOwners:    methodOwners(language, ls, tree, src),
 		Package:         declaredPackage(ls, tree, src),
 		RelativeImports: relativeImports(ls, tree, src),
-		FunctionSpans:   toFunctionSpans(spans),
+		FunctionSpans:   functionSpansWithMetrics(language, ls, tree, src, spans),
 	}
 	s.Exported = exportedSet(language, ls, tree, src, s.Functions, s.Types)
 	return s, true
 }
 
-func toFunctionSpans(spans []funcSpan) []FunctionSpan {
+// functionSpansWithMetrics builds the FunctionSpan list, computing cyclomatic +
+// cognitive complexity over the SAME parse tree (via go-codemetrics'
+// MetricsFromTree) — no second parse.
+func functionSpansWithMetrics(language string, ls *langState, tree *ts.Tree, src []byte, spans []funcSpan) []FunctionSpan {
 	if len(spans) == 0 {
 		return nil
 	}
-	out := make([]FunctionSpan, 0, len(spans))
-	for _, s := range spans {
-		out = append(out, FunctionSpan{Name: s.name, StartLine: int(s.startLine), EndLine: int(s.endLine)})
+	cmSpans := make([]cmts.Span, len(spans))
+	for i, s := range spans {
+		cmSpans[i] = cmts.Span{
+			Name: s.name, StartByte: s.start, EndByte: s.end,
+			StartLine: int(s.startLine), EndLine: int(s.endLine),
+		}
+	}
+	metrics := cmts.MetricsFromTree(language, tree, ls.lang, cmSpans)
+	out := make([]FunctionSpan, len(spans))
+	for i, s := range spans {
+		fs := FunctionSpan{Name: s.name, StartLine: int(s.startLine), EndLine: int(s.endLine)}
+		if i < len(metrics) {
+			fs.Cyclomatic = metrics[i].Cyclomatic
+			fs.Cognitive = metrics[i].Cognitive
+		}
+		out[i] = fs
 	}
 	return out
 }

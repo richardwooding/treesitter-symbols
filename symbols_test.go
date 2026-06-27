@@ -275,6 +275,77 @@ func TestDeclaredPackage(t *testing.T) {
 	}
 }
 
+func spanByName(t *testing.T, spans []symbols.FunctionSpan, name string) symbols.FunctionSpan {
+	t.Helper()
+	for _, s := range spans {
+		if s.Name == name {
+			return s
+		}
+	}
+	t.Fatalf("no FunctionSpan named %q in %+v", name, spans)
+	return symbols.FunctionSpan{}
+}
+
+func TestMetrics_Go(t *testing.T) {
+	src := []byte(`package p
+
+func classify(n int) string {
+	if n < 0 {
+		return "neg"
+	} else if n == 0 {
+		return "zero"
+	}
+	return "pos"
+}
+`)
+	s, err := symbols.ExtractGo(src)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := spanByName(t, s.FunctionSpans, "classify")
+	if f.Cyclomatic != 3 { // 1 + if + else-if
+		t.Errorf("Cyclomatic = %d, want 3", f.Cyclomatic)
+	}
+	if f.Cognitive == nil || *f.Cognitive != 2 { // if(1) + else-if(1)
+		t.Errorf("Cognitive = %v, want 2", f.Cognitive)
+	}
+}
+
+func TestMetrics_TreeSitter(t *testing.T) {
+	// Python branchy: cyclomatic 1+if+for+if = 4; cognitive if(1)+for(2)+if(3) = 6.
+	src := "def branchy(x):\n" +
+		"    if x > 0:\n" +
+		"        for i in range(x):\n" +
+		"            if i % 2 == 0:\n" +
+		"                return i\n" +
+		"    return 0\n"
+	s, err := symbols.Extract("python", []byte(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := spanByName(t, s.FunctionSpans, "branchy")
+	if f.Cyclomatic != 4 {
+		t.Errorf("Cyclomatic = %d, want 4", f.Cyclomatic)
+	}
+	if f.Cognitive == nil || *f.Cognitive != 6 {
+		t.Errorf("Cognitive = %v, want 6", f.Cognitive)
+	}
+}
+
+func TestMetrics_SwiftCognitiveNil(t *testing.T) {
+	s, err := symbols.Extract("swift", []byte("func f(_ x: Int) -> Int {\n  if x > 0 { return 1 }\n  return 0\n}\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := spanByName(t, s.FunctionSpans, "f")
+	if f.Cognitive != nil {
+		t.Errorf("Swift Cognitive = %v, want nil", f.Cognitive)
+	}
+	if f.Cyclomatic < 1 {
+		t.Errorf("Swift Cyclomatic = %d, want >= 1", f.Cyclomatic)
+	}
+}
+
 func TestUnsupportedLanguage(t *testing.T) {
 	_, err := symbols.Extract("cobol", []byte("x"))
 	if !errors.Is(err, symbols.ErrUnsupportedLanguage) {

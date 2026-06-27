@@ -47,9 +47,24 @@ type Symbols struct {
 	MethodOwners    []MethodOwner  // method -> owning type
 	Package         string         // declared package / namespace
 	RelativeImports []string       // relative imports, dots preserved (Python)
-	FunctionSpans   []FunctionSpan // name + 1-based line range
+	FunctionSpans   []FunctionSpan // name, 1-based line range, + complexity
+}
+
+type FunctionSpan struct {
+	Name       string
+	StartLine  int
+	EndLine    int
+	Cyclomatic int   // McCabe (1 + branch points)
+	Cognitive  *int  // SonarSource; nil when unavailable (Swift)
 }
 ```
+
+### Complexity, from the same parse
+
+Each `FunctionSpan` carries **cyclomatic** and **cognitive** complexity,
+computed by [`go-codemetrics`][gcm] over the *same* parse tree
+(`treesitter.MetricsFromTree`) — so symbols and metrics cost a single parse, not
+two. Cognitive is nil only where the analyzer has no spec (Swift).
 
 `SupportedLanguages()` lists the 17 identifiers. An unknown language returns a
 wrapped `ErrUnsupportedLanguage`. Parsing is best-effort: a partial parse yields
@@ -90,3 +105,5 @@ go build -tags 'grammar_subset grammar_subset_rust grammar_subset_python' ./...
 MIT — see [LICENSE](LICENSE).
 
 [gotreesitter]: https://github.com/odvcencio/gotreesitter
+
+[gcm]: https://github.com/richardwooding/go-codemetrics

@@ -26,12 +26,18 @@ type MethodOwner struct {
 	Owner  string
 }
 
-// FunctionSpan is a function or method definition's name and 1-based inclusive
-// line span.
+// FunctionSpan is a function or method definition's name, 1-based inclusive
+// line span, and complexity metrics.
 type FunctionSpan struct {
 	Name      string
 	StartLine int
 	EndLine   int
+	// Cyclomatic is the McCabe cyclomatic complexity (1 + branch points).
+	Cyclomatic int
+	// Cognitive is the SonarSource cognitive complexity, or nil when the
+	// language's analyzer does not compute it (currently Swift among the
+	// tree-sitter languages). Always set for Go.
+	Cognitive *int
 }
 
 // Symbols is the result of analysing one source file.

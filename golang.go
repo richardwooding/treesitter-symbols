@@ -7,6 +7,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	codemetrics "github.com/richardwooding/go-codemetrics"
 )
 
 // ExtractGo analyses Go source via the standard library's go/ast — no external
@@ -41,10 +43,13 @@ func ExtractGo(src []byte) (Symbols, error) {
 				for _, callee := range goCallees(d.Body) {
 					callEdges = append(callEdges, CallEdge{Caller: d.Name.Name, Callee: callee})
 				}
+				cog := codemetrics.Cognitive(d)
 				s.FunctionSpans = append(s.FunctionSpans, FunctionSpan{
-					Name:      d.Name.Name,
-					StartLine: fset.Position(d.Pos()).Line,
-					EndLine:   fset.Position(d.End()).Line,
+					Name:       d.Name.Name,
+					StartLine:  fset.Position(d.Pos()).Line,
+					EndLine:    fset.Position(d.End()).Line,
+					Cyclomatic: codemetrics.Cyclomatic(d.Body),
+					Cognitive:  &cog,
 				})
 			}
 			if owner := goReceiverType(d); owner != "" {
