@@ -362,3 +362,35 @@ func TestSupportedLanguages(t *testing.T) {
 		t.Errorf("missing go in %v", got)
 	}
 }
+
+func TestReferenceSites(t *testing.T) {
+	// helper() is called twice (a call ref); Widget is used as a type once.
+	src := []byte(`package p
+
+type Widget struct{ n int }
+
+func use(w Widget) {
+	helper()
+	helper()
+}
+`)
+	sites := symbols.ReferenceSites("go", src, "helper")
+	if len(sites) != 0 {
+		t.Errorf("go is not a tree-sitter language; want 0 sites, got %v", sites)
+	}
+
+	rsrc := []byte("fn use_it() {\n    helper();\n    helper();\n}\n")
+	rs := symbols.ReferenceSites("rust", rsrc, "helper")
+	calls := 0
+	for _, s := range rs {
+		if s.Kind == "call" {
+			calls++
+		}
+	}
+	if calls != 2 {
+		t.Errorf("rust helper call sites = %d, want 2 (%v)", calls, rs)
+	}
+	if len(symbols.ReferenceSites("rust", rsrc, "nonexistent")) != 0 {
+		t.Error("want 0 sites for an absent symbol")
+	}
+}
