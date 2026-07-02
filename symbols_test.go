@@ -332,17 +332,39 @@ func TestMetrics_TreeSitter(t *testing.T) {
 	}
 }
 
-func TestMetrics_SwiftCognitiveNil(t *testing.T) {
+func TestMetrics_SwiftCognitive(t *testing.T) {
+	// Swift gained a cognitive spec once gotreesitter v0.20.7 fixed the else-if
+	// mis-parse (go-codemetrics v0.5.0; file-search-on#491). A single if scores 1.
 	s, err := symbols.Extract("swift", []byte("func f(_ x: Int) -> Int {\n  if x > 0 { return 1 }\n  return 0\n}\n"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	f := spanByName(t, s.FunctionSpans, "f")
-	if f.Cognitive != nil {
-		t.Errorf("Swift Cognitive = %v, want nil", f.Cognitive)
+	if f.Cognitive == nil || *f.Cognitive != 1 {
+		t.Errorf("Swift Cognitive = %v, want 1", f.Cognitive)
 	}
 	if f.Cyclomatic < 1 {
 		t.Errorf("Swift Cyclomatic = %d, want >= 1", f.Cyclomatic)
+	}
+}
+
+// TestMetrics_SwiftElseIf locks in the else-if fix (previously 0 symbols on
+// gotreesitter v0.20.6): the function extracts and its else-if chain charges the
+// flat continuation cost (cognitive 1+1 = 2, cyclomatic 3).
+func TestMetrics_SwiftElseIf(t *testing.T) {
+	s, err := symbols.Extract("swift", []byte("func f(_ x: Int) -> Int {\n  if x > 0 { return 1 } else if x < 0 { return 2 }\n  return 0\n}\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Functions) == 0 {
+		t.Fatal("no functions extracted for swift else-if (regression: gotreesitter else-if mis-parse)")
+	}
+	f := spanByName(t, s.FunctionSpans, "f")
+	if f.Cognitive == nil || *f.Cognitive != 2 {
+		t.Errorf("Swift else-if Cognitive = %v, want 2", f.Cognitive)
+	}
+	if f.Cyclomatic != 3 {
+		t.Errorf("Swift else-if Cyclomatic = %d, want 3", f.Cyclomatic)
 	}
 }
 
