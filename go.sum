@@ -1,4 +1,4 @@
-github.com/odvcencio/gotreesitter v0.20.8 h1:mY3v0ZtV0UktysT65LZs2U4CUUNRmoxCufZV2mC0o8g=
-github.com/odvcencio/gotreesitter v0.20.8/go.mod h1:hBVkghd0paaYAVwd2087vfwdeU984bQbMo9LvpE0moo=
-github.com/richardwooding/go-codemetrics v0.5.0 h1:ERJK3wIiwX24Cil907jxIzzhDF+mYawxZxZA0aScoW4=
-github.com/richardwooding/go-codemetrics v0.5.0/go.mod h1:Ksq2R1eiDi1KxFbgzJV8wQzlil5z1OI/1uLp45C7nhU=
+github.com/odvcencio/gotreesitter v0.20.9 h1:LLmWtJ3LZ8ReVr6IYsAOLgSlyEYefxFNu47Uz+7bwis=
+github.com/odvcencio/gotreesitter v0.20.9/go.mod h1:hBVkghd0paaYAVwd2087vfwdeU984bQbMo9LvpE0moo=
+github.com/richardwooding/go-codemetrics v0.5.1 h1:ccQXMdNrul2TEp9hieKTJR0ULQU5HSUdDOTIVahuYbA=
+github.com/richardwooding/go-codemetrics v0.5.1/go.mod h1:hROXeOJh0EvhlELncFgBtLeVNAFczO+8fv4N/yHVtns=
