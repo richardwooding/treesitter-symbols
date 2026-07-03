@@ -62,7 +62,7 @@ type FunctionSpan struct {
 ### Complexity, from the same parse
 
 Each `FunctionSpan` carries **cyclomatic** and **cognitive** complexity,
-computed by [`go-codemetrics`][gcm] over the *same* parse tree
+computed by [`codemetrics`][gcm] over the *same* parse tree
 (`treesitter.MetricsFromTree`) — so symbols and metrics cost a single parse, not
 two. Cognitive is nil only where the analyzer has no spec (Swift).
 
@@ -97,7 +97,7 @@ go build -tags 'grammar_subset grammar_subset_rust grammar_subset_python' ./...
 
 ## Related
 
-- [`go-codemetrics`](https://github.com/richardwooding/go-codemetrics) —
+- [`codemetrics`](https://github.com/richardwooding/codemetrics) —
   cyclomatic + cognitive complexity for the same languages.
 
 ## License
@@ -106,4 +106,4 @@ MIT — see [LICENSE](LICENSE).
 
 [gotreesitter]: https://github.com/odvcencio/gotreesitter
 
-[gcm]: https://github.com/richardwooding/go-codemetrics
+[gcm]: https://github.com/richardwooding/codemetrics

@@ -8,7 +8,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	codemetrics "github.com/richardwooding/go-codemetrics"
+	codemetrics "github.com/richardwooding/codemetrics"
 )
 
 // ExtractGo analyses Go source via the standard library's go/ast — no external
