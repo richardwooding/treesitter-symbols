@@ -6,7 +6,7 @@ import (
 
 	ts "github.com/odvcencio/gotreesitter"
 	"github.com/odvcencio/gotreesitter/grammars"
-	cmts "github.com/richardwooding/go-codemetrics/treesitter"
+	cmts "github.com/richardwooding/codemetrics/treesitter"
 )
 
 // parseTimeoutMicros caps a single tree-sitter parse. A pathological grammar
@@ -138,7 +138,7 @@ func extractTreeSitter(language string, src []byte) (Symbols, bool) {
 }
 
 // functionSpansWithMetrics builds the FunctionSpan list, computing cyclomatic +
-// cognitive complexity over the SAME parse tree (via go-codemetrics'
+// cognitive complexity over the SAME parse tree (via codemetrics'
 // MetricsFromTree) — no second parse.
 func functionSpansWithMetrics(language string, ls *langState, tree *ts.Tree, src []byte, spans []funcSpan) []FunctionSpan {
 	if len(spans) == 0 {

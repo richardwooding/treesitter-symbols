@@ -37,7 +37,7 @@ type FunctionSpan struct {
 	// Cognitive is the SonarSource cognitive complexity, or nil when the
 	// language's analyzer does not compute it. Always set for Go, and for every
 	// tree-sitter language with a cognitive spec (Swift included, since
-	// go-codemetrics v0.5.0 / gotreesitter v0.20.7).
+	// codemetrics v0.5.0 / gotreesitter v0.20.7).
 	Cognitive *int
 }
 

@@ -334,7 +334,7 @@ func TestMetrics_TreeSitter(t *testing.T) {
 
 func TestMetrics_SwiftCognitive(t *testing.T) {
 	// Swift gained a cognitive spec once gotreesitter v0.20.7 fixed the else-if
-	// mis-parse (go-codemetrics v0.5.0; file-search-on#491). A single if scores 1.
+	// mis-parse (codemetrics v0.5.0; file-search-on#491). A single if scores 1.
 	s, err := symbols.Extract("swift", []byte("func f(_ x: Int) -> Int {\n  if x > 0 { return 1 }\n  return 0\n}\n"))
 	if err != nil {
 		t.Fatal(err)
