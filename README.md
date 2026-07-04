@@ -2,6 +2,8 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/richardwooding/treesitter-symbols.svg)](https://pkg.go.dev/github.com/richardwooding/treesitter-symbols)
 
+**Website:** [richardwooding.github.io/treesitter-symbols](https://richardwooding.github.io/treesitter-symbols/)
+
 Extract code symbols — **function/type definitions, imports, references, call
 edges, method→owner relations, the declared package, and the exported set** —
 from source files in **17 languages**, with one small API.
