@@ -4,4 +4,4 @@ go 1.26.2
 
 require github.com/odvcencio/gotreesitter v0.48.1
 
-require github.com/richardwooding/codemetrics v0.12.4
+require github.com/richardwooding/codemetrics v0.12.5
