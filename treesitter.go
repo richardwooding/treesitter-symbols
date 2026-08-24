@@ -223,7 +223,20 @@ func collectDefs(ls *langState, tree *ts.Tree, src []byte) (functions, types []s
 			}
 		}
 	}
-	return functions, types, spans
+	// The bundled tags query and the supplemental span query can both match
+	// the same definition (swift gained upstream tags in gotreesitter v0.50);
+	// keep the first span per byte range so FunctionSpans has no duplicates.
+	seen := make(map[[2]uint32]bool, len(spans))
+	kept := spans[:0]
+	for _, s := range spans {
+		k := [2]uint32{s.start, s.end}
+		if seen[k] {
+			continue
+		}
+		seen[k] = true
+		kept = append(kept, s)
+	}
+	return functions, types, kept
 }
 
 // collectImports gathers import paths via the per-language import query.
