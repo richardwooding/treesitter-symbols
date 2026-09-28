@@ -4,5 +4,5 @@ go 1.27.0
 
 require (
 	github.com/odvcencio/gotreesitter v0.55.0
-	github.com/richardwooding/codemetrics v0.13.0
+	github.com/richardwooding/codemetrics v0.13.1
 )
